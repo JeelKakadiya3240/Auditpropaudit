@@ -1,0 +1,208 @@
+Enterprise-Grade Prompt for Replit — Build AuditProp (auditprop.com)
+
+Use this exact prompt to instruct Replit (team of engineers + CI/CD pipeline) to build a production-ready, secure, and auditable Property Audit — 360° Due-Diligence Platform named auditprop.com. The prompt is written for engineers and product teams: it contains scope, tech choices, architecture, deliverables, APIs, data/privacy requirements, deployment, testing, and acceptance criteria.
+
+Project Title
+
+AuditProp — auditprop.com
+Enterprise property due-diligence platform: 360° property audits combining ownership, legal, financial, fraud, and compliance signals into explainable risk scores and downloadable audit reports.
+
+Mission (one-liner)
+
+Build a secure, scalable, and production-grade web platform that provides a 360° property audit for India — searchable by property, owner, company, survey number or property name — and returns verified identity checks, financial encumbrances, case history, fraud flags, and an explainable risk score.
+
+High-level Objectives (MVP → Production)
+
+MVP: searchable property 360° view, identity verification stubs, loans, legal cases ingestion (mock/scraper adapters), scoring rules engine, audit PDF export, RBAC, and audit logs.
+
+V1: add live connectors (MCA, RERA, Court scrapers), graph relationship engine, OpenSearch indexing, scheduled re-scoring, manual review queue.
+
+Production: hardened infra (TLS, KMS, secrets), monitoring, multi-region backups, consent & compliance flows (Aadhaar/PAN tokenization), SOC2-ready controls.
+
+Target Users
+
+Real-estate due diligence teams
+
+Legal counsels & conveyancing firms
+
+Lenders and risk analysts
+
+Enterprise customers (B2B)
+
+Required Deliverables (Repo-ready)
+
+Deliver a Git repo (monorepo preferred) with the following, production-ready and wired into Replit CI/CD:
+
+1 — Architecture & Tech Stack
+
+Frontend: Next.js (React) + TypeScript + Tailwind CSS
+
+Backend: Node.js + TypeScript (NestJS or Fastify) or Python FastAPI (choose TypeScript for uniformity)
+
+DB: PostgreSQL (UUIDs, JSONB); schema SQL in /db/schema.sql
+
+Search: OpenSearch / Elasticsearch (docker-compose for local)
+
+Graph: Optional Neo4j container, or strongly-indexed Postgres graph tables
+
+Message Bus: Kafka (or RabbitMQ); for MVP a lightweight queue (BullMQ/Redis) with adapters
+
+Object storage: S3-compatible (local dev: MinIO)
+
+Auth: OAuth2/JWT with RBAC (roles: admin, auditor, analyst, readonly)
+
+Secrets & Keys: integrate HashiCorp Vault or AWS KMS (placeholders + dev-mode in Replit secrets)
+
+CI/CD: GitHub Actions or Replit native CI — pipelines for build/test/deploy
+
+Containerization: Docker + compose for local; Helm charts for k8s (skeleton)
+
+Infrastructure: Terraform skeleton (AWS preferred: EKS/RDS/S3/MSK) — include dev/prod workspaces
+
+2 — Database (implemented)
+
+Full DDL (Postgres) matching the schema you designed earlier (property, owner, ownership, company, director, identity_verification, loan, cheque_bounce, fraud_flag, legal_case, case_party, rera_record, score_history, audit_log, source).
+
+Seed scripts with synthetic sample data (no real PII). Include at least 10 property records with varied cases (open FIR, closed civil, loan encumbrance, suspicious owner).
+
+3 — Backend APIs (OpenAPI spec)
+
+Implement a complete OpenAPI (v3) spec and services for:
+
+POST /v1/search — fuzzy search by name/company/property/survey no
+
+GET /v1/property/{id}/360 — full 360 JSON (owners, loans, cases, scores, provenance)
+
+GET /v1/owner/{id} — owner profile + identity + incidents
+
+POST /v1/property/{id}/recompute — trigger recompute of scores (auth)
+
+GET /v1/legal/case/{id} — case details and linked parties
+
+POST /v1/report/property/{id} — generate PDF audit report (downloadable)
+
+GET /v1/graph/relations?entityId=&depth= — graph traversal (RBAC limited)
+
+GET /v1/alerts — high-risk queue / manual review
+
+Include request/response examples and authentication in the OpenAPI spec.
+
+4 — Frontend
+
+Responsive Next.js UI with:
+
+Landing page (auditprop.com) + marketing copy (stubbed)
+
+Dashboard: Search bar, alerts, quick stats
+
+Property 360 page: property header, owners card, identity verification card (masked), loans card, legal cases card (timeline), fraud flags, RERA badge, risk score meter, downloadable PDF button
+
+Manual review queue page (for flagged properties)
+
+Admin console: User management and RBAC
+
+Provide components library and Storybook for major UI components.
+
+5 — Scoring Engine
+
+Rule-based scoring engine (server-side) with explainability. For MVP use deterministic weights and produce explain JSON explaining the top 5 drivers.
+
+Persist scores to score_history with provenance and job-id.
+
+Provide /recompute endpoint and a nightly scheduled recompute job (Crontab / K8s CronJob).
+
+6 — Identity & Verification Adapters
+
+Implement secure stub adapters for PAN/Aadhaar verification (MVP: mock responses).
+
+Tokenization pattern: accept identifier only via secure API, store hashed tokens (HMAC with server key), and store masked versions for display.
+
+Record consent logs when verification is triggered.
+
+7 — Data Ingestion & Connectors
+
+Implement three ingestion adapters (MVP): mca_adapter, rera_adapter, court_scraper_adapter (mock or scraping stubs).
+
+Each adapter must publish raw payload to object storage and a normalized row into staging tables with source metadata.
+
+8 — Search & Graph
+
+Index canonical records into OpenSearch for fast fuzzy search and aggregations.
+
+Build a graph data pipeline to link owners, directors, companies and store in Neo4j or Postgres adjacency tables.
+
+9 — Reports & Exports
+
+Generate PDF audit reports styled for enterprise (company header, summary, score breakdown, case timeline, provenance).
+
+CSV/Excel export for list views.
+
+10 — Security, Privacy & Compliance
+
+Field encryption for sensitive columns (aadhar_hash, pan_hash) — use KMS abstraction; in dev-mode use environment-based keys.
+
+Masked display of PAN/Aadhaar by default. Reveal requires justification and is logged in audit_log.
+
+RBAC enforced: only roles with permission can view sensitive details.
+
+Full PII access auditing (who, when, why, IP).
+
+Rate limit search and API endpoints to avoid scraping.
+
+Provide a data retention & deletion workflow (Right to be forgotten) and consent records.
+
+11 — Tests & Quality
+
+Unit tests (≥ 70% coverage for scoring logic + core services).
+
+Integration tests for API endpoints using seeded DB.
+
+E2E tests for main flows (search → property 360 → generate PDF).
+
+Security tests: secret scanning, dependency vulnerability scan, basic SAST rules.
+
+12 — DevOps & Observability
+
+Docker + docker-compose for local dev.
+
+CI pipeline to run tests, lint, build images, push to container registry.
+
+Logging (structured), tracing (OpenTelemetry), and metrics (Prometheus + Grafana dashboards).
+
+Monitoring alerts for ingestion failures, high-risk spikes.
+
+Non-functional Requirements
+
+Performance: Search summary < 300ms (OpenSearch), 360 view < 1.5s for cached snapshot.
+
+Scalability: horizontal scaling of API + workers. Use queues for heavy work.
+
+Availability: 99.9% target for core APIs (depending on infra).
+
+Security: TLS everywhere, field-level encryption, multi-factor admin access.
+
+Data residency: Store sensitive Indian data in India region (if deploying to cloud).
+
+Cost awareness: provide cost estimate for 3 traffic profiles (low/medium/high).
+
+Acceptance Criteria (MVP)
+
+Repo structure and README with setup instructions (local + Replit) completed.
+
+Postgres schema implemented and seeded with sample data (no real PII).
+
+OpenAPI implemented and backend APIs return correct sample responses.
+
+Next.js UI can search and display Property 360 for seeded properties.
+
+Scoring engine computes scores with explain JSON and persisted to DB.
+
+PDF audit export generated for at least 5 seeded properties.
+
+Identity adapter implements tokenization and consent logging (mock).
+
+RBAC and audit logging for PII access functional (tested with 2 roles).
+
+Docker-compose local dev works, and a single-click “Deploy to Replit” or CI pipeline is included.
+
+Tests pass in CI and code coverage report included.
