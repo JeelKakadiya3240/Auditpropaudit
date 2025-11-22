@@ -5,12 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Search, Filter, Download, AlertTriangle, CheckCircle2, Clock } from "lucide-react";
 import { PropertyCard } from "@/components/property-card";
 import { MOCK_PROPERTIES, stats } from "@/lib/mockData";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 export default function Dashboard() {
+  const [location] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get("q");
+    if (query) {
+      setSearchQuery(query);
+    }
+  }, [location]);
 
   const filteredProperties = MOCK_PROPERTIES.filter(p => 
     p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

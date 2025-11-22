@@ -1,17 +1,28 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ArrowRight, ShieldCheck, Search, Building2 } from "lucide-react";
 import generatedImage from "@assets/generated_images/abstract_blue_data_map_background.png";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function LandingPage() {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSampleReport = () => {
     toast({
       title: "Downloading Sample",
       description: "A sample enterprise audit report is being downloaded to your device.",
     });
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setLocation(`/dashboard?q=${encodeURIComponent(searchQuery)}`);
+    }
   };
 
   return (
@@ -55,14 +66,30 @@ export default function LandingPage() {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               AuditProp delivers 360° verified property audits. We combine ownership history, legal checks, financial encumbrances, and fraud detection into a single trust score.
             </p>
+
+            <div className="max-w-xl mx-auto w-full bg-card p-2 rounded-xl shadow-lg border border-border/50 flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input 
+                  placeholder="Search by property address, survey number, or owner..." 
+                  className="pl-10 h-12 text-lg border-0 bg-transparent shadow-none focus-visible:ring-0"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch(e)}
+                />
+              </div>
+              <Button size="lg" className="h-12 px-8 text-base" onClick={handleSearch}>
+                Search
+              </Button>
+            </div>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
               <Link href="/dashboard">
-                <Button size="lg" className="h-12 px-8 text-lg gap-2">
-                  Start Free Audit <ArrowRight className="h-4 w-4" />
+                <Button variant="outline" className="h-10 gap-2 border-primary/20 hover:bg-primary/5">
+                  Explore Dashboard <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="h-12 px-8 text-lg" onClick={handleSampleReport}>
+              <Button variant="ghost" className="h-10 text-muted-foreground hover:text-primary" onClick={handleSampleReport}>
                 View Sample Report
               </Button>
             </div>
