@@ -11,12 +11,10 @@ import ReviewQueue from "@/pages/review-queue";
 import AuditReports from "@/pages/audit-reports";
 import Settings from "@/pages/settings";
 
-import PublicSearch from "@/pages/public-search";
-
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={PublicSearch} />
+      <Route path="/" component={LandingPage} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/review" component={ReviewQueue} />
       <Route path="/reports" component={AuditReports} />
