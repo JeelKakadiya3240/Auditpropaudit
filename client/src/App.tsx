@@ -8,6 +8,8 @@ import LandingPage from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import PropertyDetails from "@/pages/property-details";
 import ReviewQueue from "@/pages/review-queue";
+import AuditReports from "@/pages/audit-reports";
+import Settings from "@/pages/settings";
 
 function Router() {
   return (
@@ -15,6 +17,8 @@ function Router() {
       <Route path="/" component={LandingPage} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/review" component={ReviewQueue} />
+      <Route path="/reports" component={AuditReports} />
+      <Route path="/settings" component={Settings} />
       <Route path="/property/:id" component={PropertyDetails} />
       <Route component={NotFound} />
     </Switch>
