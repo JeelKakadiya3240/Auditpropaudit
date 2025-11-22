@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { RiskScoreMeter } from "@/components/risk-meter";
+import { useToast } from "@/hooks/use-toast";
 import { 
   ArrowLeft, 
   Download, 
@@ -29,6 +30,7 @@ import { cn } from "@/lib/utils";
 export default function PropertyDetails() {
   const [, params] = useRoute("/property/:id");
   const property = MOCK_PROPERTIES.find(p => p.id === params?.id);
+  const { toast } = useToast();
 
   if (!property) {
     return (
@@ -40,6 +42,27 @@ export default function PropertyDetails() {
       </Layout>
     );
   }
+
+  const handleRecompute = () => {
+    toast({
+      title: "Recomputing Score",
+      description: "Request sent to scoring engine. This may take a few minutes.",
+    });
+  };
+
+  const handleShare = () => {
+    toast({
+      title: "Link Copied",
+      description: "Property audit link copied to clipboard.",
+    });
+  };
+
+  const handleDownload = () => {
+    toast({
+      title: "Downloading Report",
+      description: "Generating detailed PDF audit report...",
+    });
+  };
 
   return (
     <Layout>
@@ -54,13 +77,13 @@ export default function PropertyDetails() {
             <span>{property.id}</span>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" onClick={handleRecompute}>
               <RefreshCw className="h-4 w-4" /> Recompute Score
             </Button>
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" onClick={handleShare}>
               <Share2 className="h-4 w-4" /> Share
             </Button>
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={handleDownload}>
               <Download className="h-4 w-4" /> Download PDF Report
             </Button>
           </div>

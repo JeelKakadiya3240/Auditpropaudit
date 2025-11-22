@@ -13,14 +13,25 @@ import {
 import { CheckCircle2, XCircle, AlertTriangle, Eye, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ReviewQueue() {
+  const { toast } = useToast();
+
   // Filter for items that might need review (e.g. High Risk or missing KYC)
   const reviewItems = MOCK_PROPERTIES.filter(p => 
     p.riskLevel === "HIGH" || 
     p.riskLevel === "CRITICAL" || 
     p.owners.some(o => o.kycStatus === "PENDING")
   );
+
+  const handleApprove = (id: string) => {
+    toast({
+      title: "Property Approved",
+      description: `Property ${id} has been marked as verified.`,
+      variant: "default",
+    });
+  };
 
   return (
     <Layout>
@@ -103,7 +114,7 @@ export default function ReviewQueue() {
                           <Eye className="h-3 w-3" /> Review
                         </Button>
                       </Link>
-                      <Button size="sm" className="gap-1 bg-emerald-600 hover:bg-emerald-700">
+                      <Button size="sm" className="gap-1 bg-emerald-600 hover:bg-emerald-700" onClick={() => handleApprove(property.id)}>
                         <CheckCircle2 className="h-3 w-3" /> Approve
                       </Button>
                     </div>

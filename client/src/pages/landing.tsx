@@ -2,8 +2,18 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ShieldCheck, Search, Building2 } from "lucide-react";
 import generatedImage from "@assets/generated_images/abstract_blue_data_map_background.png";
+import { useToast } from "@/hooks/use-toast";
 
 export default function LandingPage() {
+  const { toast } = useToast();
+
+  const handleSampleReport = () => {
+    toast({
+      title: "Downloading Sample",
+      description: "A sample enterprise audit report is being downloaded to your device.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Navigation */}
@@ -52,7 +62,7 @@ export default function LandingPage() {
                   Start Free Audit <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="h-12 px-8 text-lg">
+              <Button size="lg" variant="outline" className="h-12 px-8 text-lg" onClick={handleSampleReport}>
                 View Sample Report
               </Button>
             </div>

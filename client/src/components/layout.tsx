@@ -98,11 +98,9 @@ export function Layout({ children }: LayoutProps) {
       <div className="flex-1 flex flex-col md:pl-64 min-h-screen">
         <header className="h-16 border-b bg-card flex items-center justify-between px-4 md:px-8 sticky top-0 z-40 shadow-sm">
           <div className="flex items-center gap-4">
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
+            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMobileOpen(true)}>
+              <Menu className="h-5 w-5" />
+            </Button>
             <div className="hidden md:flex items-center text-sm text-muted-foreground">
               <span className="font-medium text-foreground">Enterprise Workspace</span>
               <span className="mx-2">/</span>

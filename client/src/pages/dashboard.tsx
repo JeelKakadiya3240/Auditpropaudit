@@ -6,15 +6,38 @@ import { Search, Filter, Download, AlertTriangle, CheckCircle2, Clock } from "lu
 import { PropertyCard } from "@/components/property-card";
 import { MOCK_PROPERTIES, stats } from "@/lib/mockData";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
+  const { toast } = useToast();
 
   const filteredProperties = MOCK_PROPERTIES.filter(p => 
     p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.city.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleExport = () => {
+    toast({
+      title: "Export Started",
+      description: "Your audit report is being generated. It will be downloaded shortly.",
+    });
+  };
+
+  const handleFilter = () => {
+    toast({
+      title: "Filters",
+      description: "Advanced filtering options would open here.",
+    });
+  };
+
+  const handleSearch = () => {
+    toast({
+      title: "Search Updated",
+      description: `Found ${filteredProperties.length} properties matching "${searchQuery}"`,
+    });
+  };
 
   return (
     <Layout>
@@ -27,10 +50,10 @@ export default function Dashboard() {
             <p className="text-muted-foreground mt-1">Welcome back, here's what's happening with your audits.</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2" onClick={handleExport}>
               <Download className="h-4 w-4" /> Export Report
             </Button>
-            <Button className="gap-2">
+            <Button className="gap-2" onClick={handleFilter}>
               <Filter className="h-4 w-4" /> Advanced Filters
             </Button>
           </div>
@@ -68,8 +91,9 @@ export default function Dashboard() {
               className="border-0 shadow-none focus-visible:ring-0 text-lg bg-transparent"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
-            <Button size="lg">Search</Button>
+            <Button size="lg" onClick={handleSearch}>Search</Button>
           </div>
 
           {/* Results Grid */}
