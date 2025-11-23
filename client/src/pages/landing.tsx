@@ -8,8 +8,8 @@ import { useState } from "react";
 
 export default function LandingPage() {
   const { toast } = useToast();
-  const [, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
+  const [, navigate] = useLocation();
 
   const handleSampleReport = () => {
     toast({
@@ -18,10 +18,14 @@ export default function LandingPage() {
     });
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearch = () => {
     if (searchQuery.trim()) {
-      setLocation(`/dashboard?q=${encodeURIComponent(searchQuery)}`);
+      navigate(`/dashboard?q=${encodeURIComponent(searchQuery)}`);
+    } else {
+      toast({
+        title: "Search Error",
+        description: "Please enter a property name, survey number, or owner name.",
+      });
     }
   };
 
@@ -36,16 +40,24 @@ export default function LandingPage() {
           <span className="font-bold text-xl tracking-tight">AuditProp</span>
         </div>
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          <a href="#" className="hover:text-foreground transition-colors">Solutions</a>
-          <a href="#" className="hover:text-foreground transition-colors">Data Sources</a>
-          <a href="#" className="hover:text-foreground transition-colors">Pricing</a>
-          <a href="#" className="hover:text-foreground transition-colors">API</a>
+          <Link href="/solutions">
+            <a className="hover:text-foreground transition-colors">Solutions</a>
+          </Link>
+          <Link href="/data-sources">
+            <a className="hover:text-foreground transition-colors">Data Sources</a>
+          </Link>
+          <Link href="/pricing">
+            <a className="hover:text-foreground transition-colors">Pricing</a>
+          </Link>
+          <Link href="/api">
+            <a className="hover:text-foreground transition-colors">API</a>
+          </Link>
         </nav>
         <div className="flex items-center gap-4">
-          <Link href="/dashboard">
+          <Link href="/sign-in">
             <Button variant="ghost">Sign In</Button>
           </Link>
-          <Link href="/dashboard">
+          <Link href="/sign-in">
             <Button>Get Started</Button>
           </Link>
         </div>
@@ -66,33 +78,41 @@ export default function LandingPage() {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               AuditProp delivers 360° verified property audits. We combine ownership history, legal checks, financial encumbrances, and fraud detection into a single trust score.
             </p>
-
-            <div className="max-w-xl mx-auto w-full bg-card p-2 rounded-xl shadow-lg border border-border/50 flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input 
-                  placeholder="Search by property address, survey number, or owner..." 
-                  className="pl-10 h-12 text-lg border-0 bg-transparent shadow-none focus-visible:ring-0"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch(e)}
-                />
-              </div>
-              <Button size="lg" className="h-12 px-8 text-base" onClick={handleSearch}>
-                Search
-              </Button>
-            </div>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link href="/dashboard">
-                <Button variant="outline" className="h-10 gap-2 border-primary/20 hover:bg-primary/5">
-                  Explore Dashboard <ArrowRight className="h-4 w-4" />
+              <Link href="/sign-in">
+                <Button size="lg" className="h-12 px-8 text-lg gap-2">
+                  Start Free Audit <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Button variant="ghost" className="h-10 text-muted-foreground hover:text-primary" onClick={handleSampleReport}>
+              <Button size="lg" variant="outline" className="h-12 px-8 text-lg" onClick={handleSampleReport}>
                 View Sample Report
               </Button>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Try Demo Section */}
+      <section className="py-12 bg-muted/30 border-t border-b">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold mb-6 text-center">Try AuditProp Now</h2>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Input 
+                placeholder="Search by property name, survey number, or owner..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                className="flex-1"
+              />
+              <Button onClick={handleSearch} className="gap-2">
+                <Search className="h-4 w-4" /> Search
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground text-center mt-3">
+              Try searching: "Sunrise Heights", "Tech Park", or "Green Valley"
+            </p>
           </div>
         </div>
       </section>
