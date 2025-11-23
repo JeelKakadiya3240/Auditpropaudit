@@ -8,13 +8,15 @@ import {
   LogOut,
   ShieldCheck,
   Menu,
-  Bell
+  Bell,
+  Shield
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -23,14 +25,25 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { user } = useAuth();
 
-  const navigation = [
+  const baseNavigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Property Search", href: "/dashboard", icon: Search }, // Using dashboard for search for now
+    { name: "Property Search", href: "/dashboard", icon: Search },
     { name: "Review Queue", href: "/review", icon: AlertCircle },
     { name: "Audit Reports", href: "/reports", icon: FileText },
     { name: "Settings", href: "/settings", icon: Settings },
   ];
+
+  const navigation = user?.role === "admin" 
+    ? [
+        { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+        { name: "Admin Panel", href: "/admin", icon: Shield },
+        { name: "Review Queue", href: "/review", icon: AlertCircle },
+        { name: "Audit Reports", href: "/reports", icon: FileText },
+        { name: "Settings", href: "/settings", icon: Settings },
+      ]
+    : baseNavigation;
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
