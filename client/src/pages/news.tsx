@@ -170,17 +170,16 @@ export default function News() {
                         <span className="text-xs text-muted-foreground" data-testid={`source-article-${article.id}`}>
                           {article.source}
                         </span>
-                        <a href={article.url} target="_blank" rel="noopener noreferrer">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="gap-2"
-                            data-testid={`link-article-${article.id}`}
-                          >
-                            Read More
-                            <ExternalLink className="h-3 w-3" />
-                          </Button>
-                        </a>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="gap-2"
+                          data-testid={`link-article-${article.id}`}
+                          onClick={() => window.open(article.url, '_blank')}
+                        >
+                          Read More
+                          <ExternalLink className="h-3 w-3" />
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
