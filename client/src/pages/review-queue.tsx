@@ -109,11 +109,11 @@ export default function ReviewQueue() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Link href={`/property/${property.id}`}>
-                        <Button size="sm" variant="outline" className="gap-1">
+                      <Button size="sm" variant="outline" className="gap-1" asChild>
+                        <Link href={`/property/${property.id}`}>
                           <Eye className="h-3 w-3" /> Review
-                        </Button>
-                      </Link>
+                        </Link>
+                      </Button>
                       <Button size="sm" className="gap-1 bg-emerald-600 hover:bg-emerald-700" onClick={() => handleApprove(property.id)}>
                         <CheckCircle2 className="h-3 w-3" /> Approve
                       </Button>

@@ -83,9 +83,9 @@ export default function SignIn() {
           </div>
         </Link>
         <div className="flex items-center gap-4">
-          <Link href="/">
-            <Button variant="ghost">Back Home</Button>
-          </Link>
+          <Button variant="ghost" asChild>
+            <Link href="/">Back Home</Link>
+          </Button>
         </div>
       </header>
 

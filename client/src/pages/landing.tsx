@@ -40,26 +40,26 @@ export default function LandingPage() {
           <span className="font-bold text-xl tracking-tight">AuditProp</span>
         </div>
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          <Link href="/solutions">
-            <a className="hover:text-foreground transition-colors">Solutions</a>
+          <Link href="/solutions" className="hover:text-foreground transition-colors">
+            Solutions
           </Link>
-          <Link href="/data-sources">
-            <a className="hover:text-foreground transition-colors">Data Sources</a>
+          <Link href="/data-sources" className="hover:text-foreground transition-colors">
+            Data Sources
           </Link>
-          <Link href="/pricing">
-            <a className="hover:text-foreground transition-colors">Pricing</a>
+          <Link href="/pricing" className="hover:text-foreground transition-colors">
+            Pricing
           </Link>
-          <Link href="/api">
-            <a className="hover:text-foreground transition-colors">API</a>
+          <Link href="/api" className="hover:text-foreground transition-colors">
+            API
           </Link>
         </nav>
         <div className="flex items-center gap-4">
-          <Link href="/sign-in">
-            <Button variant="ghost">Sign In</Button>
-          </Link>
-          <Link href="/sign-in">
-            <Button>Get Started</Button>
-          </Link>
+          <Button variant="ghost" asChild>
+            <Link href="/sign-in">Sign In</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/sign-in">Get Started</Link>
+          </Button>
         </div>
       </header>
 
@@ -111,11 +111,11 @@ export default function LandingPage() {
       <section className="py-8">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/sign-in">
-              <Button size="lg" className="h-12 px-8 text-lg gap-2">
+            <Button size="lg" className="h-12 px-8 text-lg gap-2" asChild>
+              <Link href="/sign-in">
                 Start Free Audit <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <Button size="lg" variant="outline" className="h-12 px-8 text-lg" onClick={handleSampleReport}>
               View Sample Report
             </Button>

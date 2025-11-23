@@ -133,9 +133,9 @@ export default function Pricing() {
               <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
                 Need a custom solution? Our enterprise team is ready to discuss your unique requirements and build a tailored plan.
               </p>
-              <Link href="/sign-in">
-                <Button variant="outline">Contact Sales Team</Button>
-              </Link>
+              <Button variant="outline" asChild>
+                <Link href="/sign-in">Contact Sales Team</Link>
+              </Button>
             </div>
           </div>
         </section>

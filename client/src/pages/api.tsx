@@ -51,9 +51,9 @@ export default function APIPage() {
           </div>
         </Link>
         <div className="flex items-center gap-4">
-          <Link href="/">
-            <Button variant="ghost">Back Home</Button>
-          </Link>
+          <Button variant="ghost" asChild>
+            <Link href="/">Back Home</Link>
+          </Button>
         </div>
       </header>
 
@@ -119,11 +119,11 @@ export default function APIPage() {
               </pre>
             </div>
 
-            <Link href="/sign-in">
-              <Button size="lg" className="gap-2">
+            <Button size="lg" className="gap-2" asChild>
+              <Link href="/sign-in">
                 Get Started with API
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </section>
       </main>

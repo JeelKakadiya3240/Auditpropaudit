@@ -57,11 +57,11 @@ export function PropertyCard({ property }: PropertyCardProps) {
       
       <CardFooter className="p-4 bg-muted/30 flex justify-between items-center">
         <span className="text-xs text-muted-foreground">Last audited: {new Date(property.lastAudited).toLocaleDateString()}</span>
-        <Link href={`/property/${property.id}`}>
-          <Button size="sm" variant="outline" className="gap-2 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all">
+        <Button size="sm" variant="outline" className="gap-2 group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-all" asChild>
+          <Link href={`/property/${property.id}`}>
             Full Audit <ArrowRight className="w-3 h-3" />
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </CardFooter>
     </Card>
   );
