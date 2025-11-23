@@ -64,18 +64,18 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-12 md:py-20 overflow-hidden">
+      <section className="relative py-6 md:py-10 overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10">
           <img src={generatedImage} alt="Background" className="w-full h-full object-cover" />
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
+          <div className="max-w-3xl mx-auto text-center space-y-3">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight">
               The Standard for <br/>
               <span className="text-primary">Property Due Diligence</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base text-muted-foreground max-w-2xl mx-auto">
               AuditProp delivers 360° verified property audits. We combine ownership history, legal checks, financial encumbrances, and fraud detection into a single trust score.
             </p>
           </div>
@@ -83,11 +83,11 @@ export default function LandingPage() {
       </section>
 
       {/* Try Demo Section - Search Bar */}
-      <section className="py-8 bg-muted/30 border-t border-b">
+      <section className="py-3 bg-muted/30 border-t border-b">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6 text-center">Try AuditProp Now</h2>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <h2 className="text-xl font-bold mb-3 text-center">Try AuditProp Now</h2>
+            <div className="flex flex-col sm:flex-row gap-3">
               <Input 
                 placeholder="Search by property name, survey number, or owner..." 
                 value={searchQuery}
@@ -100,8 +100,8 @@ export default function LandingPage() {
                 <Search className="h-4 w-4" /> Search
               </Button>
             </div>
-            <p className="text-sm text-muted-foreground text-center mt-3">
-              Try searching: "Sunrise Heights", "Tech Park", or "Green Valley"
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              Try: "Sunrise Heights", "Tech Park", or "Green Valley"
             </p>
           </div>
         </div>
