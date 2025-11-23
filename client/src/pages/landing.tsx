@@ -64,37 +64,26 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-20 md:py-32 overflow-hidden">
+      <section className="relative py-12 md:py-20 overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10">
           <img src={generatedImage} alt="Background" className="w-full h-full object-cover" />
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center space-y-8">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
+          <div className="max-w-3xl mx-auto text-center space-y-6">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
               The Standard for <br/>
               <span className="text-primary">Property Due Diligence</span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               AuditProp delivers 360° verified property audits. We combine ownership history, legal checks, financial encumbrances, and fraud detection into a single trust score.
             </p>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <Link href="/sign-in">
-                <Button size="lg" className="h-12 px-8 text-lg gap-2">
-                  Start Free Audit <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Button size="lg" variant="outline" className="h-12 px-8 text-lg" onClick={handleSampleReport}>
-                View Sample Report
-              </Button>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Try Demo Section */}
-      <section className="py-12 bg-muted/30 border-t border-b">
+      {/* Try Demo Section - Search Bar */}
+      <section className="py-8 bg-muted/30 border-t border-b">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-2xl font-bold mb-6 text-center">Try AuditProp Now</h2>
@@ -105,14 +94,31 @@ export default function LandingPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 className="flex-1"
+                data-testid="input-search"
               />
-              <Button onClick={handleSearch} className="gap-2">
+              <Button onClick={handleSearch} className="gap-2" data-testid="button-search">
                 <Search className="h-4 w-4" /> Search
               </Button>
             </div>
             <p className="text-sm text-muted-foreground text-center mt-3">
               Try searching: "Sunrise Heights", "Tech Park", or "Green Valley"
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Buttons */}
+      <section className="py-8">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/sign-in">
+              <Button size="lg" className="h-12 px-8 text-lg gap-2">
+                Start Free Audit <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Button size="lg" variant="outline" className="h-12 px-8 text-lg" onClick={handleSampleReport}>
+              View Sample Report
+            </Button>
           </div>
         </div>
       </section>
