@@ -10,7 +10,9 @@ import {
   Menu,
   Bell,
   Shield,
-  BarChart3
+  BarChart3,
+  Zap,
+  Layers
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -30,22 +32,25 @@ export function Layout({ children }: LayoutProps) {
 
   const baseNavigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Property Search", href: "/dashboard", icon: Search },
+    { name: "All Features", href: "/features", icon: Layers },
     { name: "Review Queue", href: "/review", icon: AlertCircle },
     { name: "Audit Reports", href: "/reports", icon: FileText },
     { name: "NRI Suite", href: "/nri", icon: ShieldCheck },
     { name: "Market Intelligence", href: "/market", icon: BarChart3 },
+    { name: "Fraud Detection", href: "/fraud", icon: Zap },
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 
   const navigation = user?.role === "admin" 
     ? [
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+        { name: "All Features", href: "/features", icon: Layers },
         { name: "Admin Panel", href: "/admin", icon: Shield },
         { name: "Review Queue", href: "/review", icon: AlertCircle },
         { name: "Audit Reports", href: "/reports", icon: FileText },
         { name: "NRI Suite", href: "/nri", icon: ShieldCheck },
         { name: "Market Intelligence", href: "/market", icon: BarChart3 },
+        { name: "Fraud Detection", href: "/fraud", icon: Zap },
         { name: "Settings", href: "/settings", icon: Settings },
       ]
     : baseNavigation;

@@ -23,6 +23,8 @@ import AuditorDashboard from "@/pages/auditor";
 import VerificationHub from "@/pages/verification-hub";
 import NRI from "@/pages/nri";
 import MarketIntelligence from "@/pages/market-intelligence";
+import FraudDetection from "@/pages/fraud-detection";
+import ComprehensiveDashboard from "@/pages/comprehensive-dashboard";
 
 function Router() {
   return (
@@ -37,6 +39,8 @@ function Router() {
       <Route path="/settings" component={Settings} />
       <Route path="/nri" component={NRI} />
       <Route path="/market" component={MarketIntelligence} />
+      <Route path="/fraud" component={FraudDetection} />
+      <Route path="/features" component={ComprehensiveDashboard} />
       <Route path="/property/:id" component={PropertyDetails} />
       <Route path="/solutions" component={Solutions} />
       <Route path="/data-sources" component={DataSources} />
