@@ -17,6 +17,7 @@ import {
   Globe,
   DollarSign,
   ArrowRight,
+  Gavel,
 } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -89,6 +90,14 @@ export default function ComprehensiveDashboard() {
       color: "bg-indigo-100 text-indigo-600",
     },
     {
+      name: "Litigation Search",
+      description: "Multi-state court database for property litigation cases",
+      icon: Building2,
+      href: "/litigation",
+      stats: "6 major states integrated",
+      color: "bg-red-100 text-red-600",
+    },
+    {
       name: "Admin Panel",
       description: "System administration and user management",
       icon: Users,
@@ -141,6 +150,17 @@ export default function ComprehensiveDashboard() {
         "Rental Yield Computation",
         "Regulatory Change Tracking",
         "City Comparison Tools",
+      ],
+    },
+    {
+      category: "Legal & Litigation",
+      items: [
+        "Multi-state court database integration",
+        "Case number search and verification",
+        "Litigation status tracking",
+        "Risk level assessment",
+        "Judgment and order records",
+        "Party name search database",
       ],
     },
     {
@@ -319,6 +339,27 @@ export default function ComprehensiveDashboard() {
                     "Document Mgmt",
                   ].map((item, i) => (
                     <Badge key={i} variant="secondary" className="justify-start" data-testid={`badge-compliance-${i}`}>
+                      ✓ {item}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Litigation */}
+              <div className="space-y-2">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <Gavel className="h-4 w-4" /> Litigation Search
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {[
+                    "Court Integration",
+                    "Case Search",
+                    "Risk Assessment",
+                    "Status Tracking",
+                    "Judgment Records",
+                    "Multi-State DB",
+                  ].map((item, i) => (
+                    <Badge key={i} variant="secondary" className="justify-start" data-testid={`badge-litigation-${i}`}>
                       ✓ {item}
                     </Badge>
                   ))}

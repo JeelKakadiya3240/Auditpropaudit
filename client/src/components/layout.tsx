@@ -13,7 +13,8 @@ import {
   BarChart3,
   Zap,
   Layers,
-  Upload
+  Upload,
+  Gavel
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -36,6 +37,7 @@ export function Layout({ children }: LayoutProps) {
     { name: "All Features", href: "/features", icon: Layers },
     { name: "Review Queue", href: "/review", icon: AlertCircle },
     { name: "Audit Reports", href: "/reports", icon: FileText },
+    { name: "Litigation Search", href: "/litigation", icon: Gavel },
     { name: "NRI Suite", href: "/nri", icon: ShieldCheck },
     { name: "Market Intelligence", href: "/market", icon: BarChart3 },
     { name: "Fraud Detection", href: "/fraud", icon: Zap },
@@ -50,6 +52,7 @@ export function Layout({ children }: LayoutProps) {
         { name: "Admin Panel", href: "/admin", icon: Shield },
         { name: "Review Queue", href: "/review", icon: AlertCircle },
         { name: "Audit Reports", href: "/reports", icon: FileText },
+        { name: "Litigation Search", href: "/litigation", icon: Gavel },
         { name: "NRI Suite", href: "/nri", icon: ShieldCheck },
         { name: "Market Intelligence", href: "/market", icon: BarChart3 },
         { name: "Fraud Detection", href: "/fraud", icon: Zap },
