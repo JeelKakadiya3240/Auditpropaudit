@@ -29,6 +29,7 @@ import DocumentVerification from "@/pages/document-verification";
 import LitigationSearch from "@/pages/litigation-search";
 import TitleVerification from "@/pages/title-verification";
 import DeveloperAuditDashboard from "@/pages/developer-audit-dashboard";
+import NRISolutions from "@/pages/nri-solutions";
 
 function Router() {
   return (
@@ -51,6 +52,7 @@ function Router() {
       <Route path="/features" component={ComprehensiveDashboard} />
       <Route path="/property/:id" component={PropertyDetails} />
       <Route path="/solutions" component={Solutions} />
+      <Route path="/nri-solutions" component={NRISolutions} />
       <Route path="/data-sources" component={DataSources} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/api" component={APIPage} />

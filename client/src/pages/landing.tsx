@@ -40,19 +40,22 @@ export default function LandingPage() {
           <span className="font-bold text-xl tracking-tight">AuditProp</span>
         </div>
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          <Link href="/solutions" className="hover:text-foreground transition-colors">
+          <Link href="/solutions" className="hover:text-foreground transition-colors" data-testid="link-solutions">
             Solutions
           </Link>
-          <Link href="/data-sources" className="hover:text-foreground transition-colors">
+          <Link href="/nri-solutions" className="hover:text-foreground transition-colors" data-testid="link-nri-solutions">
+            NRI Solutions
+          </Link>
+          <Link href="/data-sources" className="hover:text-foreground transition-colors" data-testid="link-data-sources">
             Data Sources
           </Link>
-          <Link href="/pricing" className="hover:text-foreground transition-colors">
+          <Link href="/pricing" className="hover:text-foreground transition-colors" data-testid="link-pricing">
             Pricing
           </Link>
-          <Link href="/api" className="hover:text-foreground transition-colors">
+          <Link href="/api" className="hover:text-foreground transition-colors" data-testid="link-api">
             API
           </Link>
-          <Link href="/news" className="hover:text-foreground transition-colors">
+          <Link href="/news" className="hover:text-foreground transition-colors" data-testid="link-news">
             News
           </Link>
         </nav>
