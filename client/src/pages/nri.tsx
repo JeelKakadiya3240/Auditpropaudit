@@ -619,7 +619,7 @@ export default function NRI() {
                     <p>• Set up NRE/NRO account with bank for fund transfers</p>
                     <p>• Conduct title search and legal verification of property</p>
                     <p>• Secure apostilled Power of Attorney if using representative</p>
-                    <p>• Get Foreign Exchange approval if remitting >USD 250,000</p>
+                    <p>• Get Foreign Exchange approval if remitting {">"} USD 250,000</p>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -863,7 +863,7 @@ export default function NRI() {
                   <strong>ITR Filing Deadline:</strong> July 31st of following financial year
                 </p>
                 <p>
-                  <strong>TDS Payment:</strong> Typically deducted at source if earning >₹50,000 annually
+                  <strong>TDS Payment:</strong> Typically deducted at source if earning {">"} ₹50,000 annually
                 </p>
                 <p>
                   <strong>Repatriation Requests:</strong> Must be filed along with relevant documentation
