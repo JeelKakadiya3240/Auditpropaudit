@@ -97,7 +97,7 @@ export class MemStorage implements IStorage {
       delayMonths: 2,
       amenities: ["Swimming Pool", "Gym", "Parking"],
       approvalNumber: "BNG-APPROVAL-2019-456",
-      sanctionedArea: 35000,
+      sanctionedArea: "35000",
       unitsDelivered: 420,
       buyerComplaints: 12,
       createdAt: new Date(),
@@ -133,8 +133,8 @@ export class MemStorage implements IStorage {
       caseType: "title_dispute",
       filingDate: new Date("2023-06-15"),
       status: "pending",
-      judgment: undefined,
-      judgmentDate: undefined,
+      judgment: null,
+      judgmentDate: null,
       description: "Property title dispute regarding boundary demarcation",
       riskLevel: "high",
       createdAt: new Date(),
@@ -147,15 +147,15 @@ export class MemStorage implements IStorage {
       state: "Karnataka",
       locality: "Whitefield",
       monthYear: "2025-01",
-      avgPropertyPrice: 8500000,
-      pricePerSqft: 8500,
+      avgPropertyPrice: "8500000",
+      pricePerSqft: "8500",
       transactionVolume: 245,
-      frauldRatePercentage: 2.3,
-      developerDefaultRate: 1.2,
-      projectStallRate: 0.8,
+      fraudRatePercentage: "2.3",
+      developerDefaultRate: "1.2",
+      projectStallRate: "0.8",
       avgProjectDelayMonths: 3,
-      demandSupplyRatio: 1.4,
-      rentYield: 3.2,
+      demandSupplyRatio: "1.4",
+      rentYield: "3.2",
       investmentScore: 78,
       regulatoryChanges: ["New RERA compliance norms", "GST rate changes"],
       createdAt: new Date(),
@@ -175,7 +175,7 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id };
+    const user: User = { ...insertUser, id, role: "user" };
     this.users.set(id, user);
     return user;
   }
@@ -241,7 +241,7 @@ export class MemStorage implements IStorage {
   async createNRIChecklist(checklist: Partial<NRIDocumentChecklist>): Promise<NRIDocumentChecklist> {
     const newChecklist: NRIDocumentChecklist = {
       id: randomUUID(),
-      nriEmail: checklist.nriEmail || "",
+      nriEmail: checklist.nriEmail ?? "",
       propertyId: checklist.propertyId,
       passportVerified: checklist.passportVerified || false,
       panCardVerified: checklist.panCardVerified || false,

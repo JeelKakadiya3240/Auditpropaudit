@@ -1,7 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertContactMessageSchema, type NewsArticle } from "@shared/schema";
+import { insertContactMessageSchema, insertUserSchema, type NewsArticle } from "@shared/schema";
+import { ZodError } from "zod";
 
 const NEWS_SOURCES = [
   { name: "Real Estate", keywords: "real estate property market housing" },
@@ -168,7 +169,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const checklist = await storage.createNRIChecklist(req.body);
       res.json(checklist);
     } catch (error) {
-      res.status(500).json({ error: "Failed to create NRI checklist" });
+      if (error instanceof ZodError) {
+        res.status(400).json({ error: "Invalid checklist data", details: error.errors });
+      } else {
+        res.status(500).json({ error: "Failed to create NRI checklist" });
+      }
     }
   });
 

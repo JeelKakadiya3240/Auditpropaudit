@@ -224,7 +224,7 @@ export const marketIntelligence = pgTable("market_intelligence", {
   avgPropertyPrice: numeric("avg_property_price", { precision: 15, scale: 2 }),
   pricePerSqft: numeric("price_per_sqft", { precision: 10, scale: 2 }),
   transactionVolume: integer("transaction_volume").default(0),
-  frauldRatePercentage: numeric("fraud_rate_percentage", { precision: 5, scale: 2 }),
+  fraudRatePercentage: numeric("fraud_rate_percentage", { precision: 5, scale: 2 }),
   developerDefaultRate: numeric("developer_default_rate", { precision: 5, scale: 2 }),
   projectStallRate: numeric("project_stall_rate", { precision: 5, scale: 2 }),
   avgProjectDelayMonths: integer("avg_project_delay_months").default(0),
