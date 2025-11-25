@@ -28,6 +28,7 @@ import ComprehensiveDashboard from "@/pages/comprehensive-dashboard";
 import DocumentVerification from "@/pages/document-verification";
 import LitigationSearch from "@/pages/litigation-search";
 import TitleVerification from "@/pages/title-verification";
+import DeveloperAuditDashboard from "@/pages/developer-audit-dashboard";
 
 function Router() {
   return (
@@ -46,6 +47,7 @@ function Router() {
       <Route path="/documents" component={DocumentVerification} />
       <Route path="/litigation" component={LitigationSearch} />
       <Route path="/title" component={TitleVerification} />
+      <Route path="/developer-audit" component={DeveloperAuditDashboard} />
       <Route path="/features" component={ComprehensiveDashboard} />
       <Route path="/property/:id" component={PropertyDetails} />
       <Route path="/solutions" component={Solutions} />

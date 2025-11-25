@@ -38,6 +38,7 @@ export function Layout({ children }: LayoutProps) {
     { name: "All Features", href: "/features", icon: Layers },
     { name: "Review Queue", href: "/review", icon: AlertCircle },
     { name: "Audit Reports", href: "/reports", icon: FileText },
+    { name: "Developer Audits", href: "/developer-audit", icon: Building2 },
     { name: "Title Verification", href: "/title", icon: Landmark },
     { name: "Litigation Search", href: "/litigation", icon: Gavel },
     { name: "NRI Suite", href: "/nri", icon: ShieldCheck },
