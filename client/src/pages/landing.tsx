@@ -55,6 +55,9 @@ export default function LandingPage() {
           <Link href="/api" className="hover:text-foreground transition-colors" data-testid="link-api">
             API
           </Link>
+          <Link href="/contact" className="hover:text-foreground transition-colors" data-testid="link-contact">
+            Contact
+          </Link>
           <Link href="/news" className="hover:text-foreground transition-colors" data-testid="link-news">
             News
           </Link>
