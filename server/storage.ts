@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type ContactMessage, type InsertContactMessage, type EncumbranceCertificate, type ReraProject, type LitigationCase, type NRIDocumentChecklist, type TitleVerification, type FraudDetectionScore, type DeveloperAudit, type DocumentVerification, type LandRecord, type MarketIntelligence } from "@shared/schema";
+import { type User, type InsertUser, type ContactMessage, type InsertContactMessage, type EncumbranceCertificate, type ReraProject, type LitigationCase, type NRIDocumentChecklist, type TitleVerification, type FraudDetectionScore, type DeveloperAudit, type DocumentVerification, type LandRecord, type MarketIntelligence, type UserCredit, type UserProperty, type PropertyArchiveEntry, type InsertUserProperty } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -45,6 +45,16 @@ export interface IStorage {
   // Market Intelligence methods
   getMarketIntelligence(city: string, monthYear: string): Promise<MarketIntelligence | undefined>;
   listMarketIntelligenceByCity(city: string): Promise<MarketIntelligence[]>;
+
+  // User Credits & Properties methods
+  getUserCredits(userId: string): Promise<UserCredit | undefined>;
+  createUserCredits(userId: string): Promise<UserCredit>;
+  addUserProperty(property: InsertUserProperty): Promise<UserProperty>;
+  getUserProperties(userId: string, status?: string): Promise<UserProperty[]>;
+  updateUserPropertyStatus(propertyId: string, status: string): Promise<UserProperty | undefined>;
+  archiveSearchedProperty(userId: string, propertyId: string, propertyDetails: any, notes?: string): Promise<PropertyArchiveEntry>;
+  getPropertyArchive(userId: string): Promise<PropertyArchiveEntry[]>;
+  deductCredits(userId: string, amount: number): Promise<UserCredit | undefined>;
 }
 
 export class MemStorage implements IStorage {

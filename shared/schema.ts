@@ -235,6 +235,47 @@ export const marketIntelligence = pgTable("market_intelligence", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// User Credits System
+export const userCredits = pgTable("user_credits", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  totalCredits: integer("total_credits").notNull().default(100),
+  usedCredits: integer("used_credits").notNull().default(0),
+  creditsPerProperty: integer("credits_per_property").notNull().default(1),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User Properties (Buy/Sell Listings)
+export const userProperties = pgTable("user_properties", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  propertyName: text("property_name").notNull(),
+  address: text("address").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  pincode: text("pincode"),
+  propertyType: text("property_type").notNull(), // RESIDENTIAL, COMMERCIAL, LAND
+  transactionType: text("transaction_type").notNull(), // BUY, SELL
+  estimatedValue: numeric("estimated_value", { precision: 15, scale: 2 }),
+  area: numeric("area", { precision: 10, scale: 2 }),
+  description: text("description"),
+  status: text("status").notNull().default("active"), // active, archived, completed
+  auditDetails: jsonb("audit_details"), // {riskScore, riskLevel, findings}
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Property Archive (Search History)
+export const propertyArchive = pgTable("property_archive", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  propertyId: varchar("property_id").notNull(),
+  propertyDetails: jsonb("property_details").notNull(),
+  searchedAt: timestamp("searched_at").defaultNow(),
+  notes: text("notes"),
+  rating: integer("rating"), // 1-5
+});
+
 // Schemas & Types
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
@@ -282,3 +323,15 @@ export type NewsArticle = {
   publishedAt: string;
   category: string;
 };
+
+export type UserCredit = typeof userCredits.$inferSelect;
+export type UserProperty = typeof userProperties.$inferSelect;
+export type PropertyArchiveEntry = typeof propertyArchive.$inferSelect;
+
+export const insertUserPropertySchema = createInsertSchema(userProperties).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertUserProperty = z.infer<typeof insertUserPropertySchema>;
