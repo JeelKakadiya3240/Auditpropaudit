@@ -379,6 +379,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Fraud Detection endpoints
+  app.post("/api/fraud-detection/analyze", async (req, res) => {
+    try {
+      const { propertyId, ownerName, address, state } = req.body;
+      if (!propertyId || !ownerName || !address || !state) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+      const fraudScore = await storage.analyzeFraudRisks(propertyId, ownerName, address, state);
+      res.json(fraudScore);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to analyze fraud risks" });
+    }
+  });
+
+  app.get("/api/fraud-detection/:propertyId", async (req, res) => {
+    try {
+      const fraudScore = await storage.getFraudScore(req.params.propertyId);
+      if (!fraudScore) {
+        return res.status(404).json({ error: "Fraud score not found" });
+      }
+      res.json(fraudScore);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch fraud score" });
+    }
+  });
+
+  // Litigation Search endpoints
+  app.get("/api/litigation/case/:caseNumber", async (req, res) => {
+    try {
+      const litigationCase = await storage.getLitigationCase(req.params.caseNumber);
+      if (!litigationCase) {
+        return res.status(404).json({ error: "Case not found" });
+      }
+      res.json(litigationCase);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch litigation case" });
+    }
+  });
+
+  app.get("/api/litigation/property/:propertyId", async (req, res) => {
+    try {
+      const cases = await storage.searchLitigationByPropertyId(req.params.propertyId);
+      res.json(cases);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch litigation cases" });
+    }
+  });
+
+  app.get("/api/litigation/owner", async (req, res) => {
+    try {
+      const ownerName = req.query.name as string;
+      const state = req.query.state as string | undefined;
+      if (!ownerName) {
+        return res.status(400).json({ error: "Owner name required" });
+      }
+      const cases = await storage.searchLitigationByOwner(ownerName, state);
+      res.json(cases);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to search litigation cases" });
+    }
+  });
+
+  app.get("/api/litigation/state/:state", async (req, res) => {
+    try {
+      const cases = await storage.listLitigationCasesByState(req.params.state);
+      res.json(cases);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch litigation cases" });
+    }
+  });
+
+  app.get("/api/litigation/high-risk", async (req, res) => {
+    try {
+      const cases = await storage.getHighRiskLitigationCases();
+      res.json(cases);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch high-risk cases" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

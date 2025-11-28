@@ -249,6 +249,34 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async searchLitigationByOwner(ownerName: string, state?: string): Promise<LitigationCase[]> {
+    const allCases = Array.from(this.litigationCases.values());
+    return allCases.filter(c => 
+      (c.plaintiff?.includes(ownerName) || c.defendant?.includes(ownerName) || c.ownerName === ownerName) &&
+      (!state || c.state === state)
+    );
+  }
+
+  async searchLitigationByPropertyId(propertyId: string): Promise<LitigationCase[]> {
+    return Array.from(this.litigationCases.values())
+      .filter(c => c.propertyId === propertyId);
+  }
+
+  async listLitigationCasesByState(state: string): Promise<LitigationCase[]> {
+    return Array.from(this.litigationCases.values())
+      .filter(c => c.state === state);
+  }
+
+  async getHighRiskLitigationCases(): Promise<LitigationCase[]> {
+    return Array.from(this.litigationCases.values())
+      .filter(c => c.riskLevel === "high" || c.riskLevel === "critical")
+      .sort((a, b) => {
+        const riskOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+        return (riskOrder[a.riskLevel as keyof typeof riskOrder] || 4) - 
+               (riskOrder[b.riskLevel as keyof typeof riskOrder] || 4);
+      });
+  }
+
   // NRI Document Checklist methods
   async getNRIChecklist(nriEmail: string): Promise<NRIDocumentChecklist | undefined> {
     return Array.from(this.nriChecklists.values()).find(c => c.nriEmail === nriEmail);
