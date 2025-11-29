@@ -8,8 +8,8 @@ export default function Pricing() {
   const plans = [
     {
       name: "Starter",
-      price: "₹499",
-      period: "/audit",
+      price: "Free",
+      period: "forever",
       description: "For individual users and small teams",
       features: [
         "Basic property audit",
@@ -18,23 +18,7 @@ export default function Pricing() {
         "PDF report",
         "Email support",
       ],
-      cta: "Start Free Trial",
-    },
-    {
-      name: "Professional",
-      price: "₹4,999",
-      period: "/month",
-      description: "For growing real estate teams",
-      features: [
-        "Unlimited audits",
-        "Advanced risk scoring",
-        "Loan encumbrance tracking",
-        "Batch processing (100/day)",
-        "API access (10k calls/month)",
-        "Priority support",
-        "Custom reports",
-      ],
-      cta: "Get Started",
+      cta: "Start Now",
       popular: true,
     },
     {
@@ -110,16 +94,14 @@ export default function Pricing() {
         {/* Pricing Cards */}
         <section className="py-16 md:py-24">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-4 gap-6 mb-12">
+            <div className="grid md:grid-cols-3 gap-6 mb-12">
               {plans.map((plan, i) => (
                 <Card
                   key={i}
                   className={`border-muted relative ${
-                    plan.popular ? "ring-2 ring-primary shadow-lg md:col-span-1" : ""
+                    plan.popular ? "ring-2 ring-primary shadow-lg" : ""
                   } ${
                     plan.highlighted ? "ring-2 ring-amber-500 shadow-lg" : ""
-                  } ${
-                    plan.name === "Enterprise" ? "md:col-span-1" : ""
                   }`}
                 >
                   {plan.popular && (
