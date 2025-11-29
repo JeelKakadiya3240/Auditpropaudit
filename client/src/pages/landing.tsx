@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, ShieldCheck, Search, Building2 } from "lucide-react";
+import { ArrowRight, ShieldCheck, Search, Building2, Download } from "lucide-react";
 import generatedImage from "@assets/generated_images/abstract_blue_data_map_background.png";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -16,6 +16,32 @@ export default function LandingPage() {
       title: "Downloading Sample",
       description: "A sample enterprise audit report is being downloaded to your device.",
     });
+  };
+
+  const handleDownloadFeatures = async () => {
+    try {
+      const response = await fetch("/api/features-document");
+      if (!response.ok) throw new Error("Failed to download");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "AuditProp-Features-Guide.docx";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast({
+        title: "Downloaded",
+        description: "AuditProp Features Guide has been downloaded successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to download features document.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSearch = () => {
@@ -125,8 +151,11 @@ export default function LandingPage() {
                 Start Free Audit <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="h-12 px-8 text-lg" onClick={handleSampleReport}>
+            <Button size="lg" variant="outline" className="h-12 px-8 text-lg" onClick={handleSampleReport} data-testid="button-sample-report">
               View Sample Report
+            </Button>
+            <Button size="lg" variant="outline" className="h-12 px-8 text-lg gap-2" onClick={handleDownloadFeatures} data-testid="button-download-features">
+              <Download className="h-4 w-4" /> Download Features Guide
             </Button>
           </div>
         </div>
