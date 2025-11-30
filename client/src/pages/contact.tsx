@@ -265,7 +265,7 @@ export default function Contact() {
                             What are you interested in?
                           </label>
                           <div className="grid md:grid-cols-2 gap-3">
-                            {["Property Verification (₹24,999)", "Property Audits", "Due Diligence", "Fraud Detection", "Legal Review", "Financial Analysis"].map((interest) => (
+                            {["Online Research Credits", "Deep Search Credits", "NRI Suites Credits", "Bulk Packages", "Custom Solutions", "Other Inquiries"].map((interest) => (
                               <label key={interest} className="flex items-center gap-2 cursor-pointer">
                                 <Checkbox
                                   name={interest}
