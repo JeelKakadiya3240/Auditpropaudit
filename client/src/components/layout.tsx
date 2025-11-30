@@ -34,7 +34,7 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const baseNavigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -109,13 +109,19 @@ export function Layout({ children }: LayoutProps) {
         <div className="flex items-center gap-3 px-3 py-2">
           <Avatar className="h-8 w-8">
             <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>JD</AvatarFallback>
+            <AvatarFallback>{user?.name?.substring(0, 2).toUpperCase() || "U"}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">John Doe</p>
-            <p className="text-xs text-sidebar-foreground/60 truncate">Lead Auditor</p>
+            <p className="text-sm font-medium truncate">{user?.name || "Guest User"}</p>
+            <p className="text-xs text-sidebar-foreground/60 truncate capitalize">{user?.role?.replace("_", " ") || "Not logged in"}</p>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground/60">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 text-sidebar-foreground/60"
+            onClick={logout}
+            data-testid="button-logout"
+          >
             <LogOut className="h-4 w-4" />
           </Button>
         </div>

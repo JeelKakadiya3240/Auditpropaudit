@@ -410,7 +410,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate overall risk score from audit results
       const overallRiskScore = Math.floor(
         (auditResults.fraudScore.overallFraudScore * 0.4) +
-        (auditResults.titleVerification.riskScore * 0.3) +
+        ((auditResults.titleVerification.riskScore ?? 0) * 0.3) +
         ((auditResults.encumbranceCertificate.fraudRiskScore || 0) * 0.2) +
         (auditResults.litigationCases.length > 0 ? 20 : 0) * 0.1
       );

@@ -10,6 +10,7 @@ import { MOCK_PROPERTIES, stats, formatCurrency } from "@/lib/mockData";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation, Link } from "wouter";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Dashboard() {
   const [location, setLocation] = useLocation();
@@ -33,7 +34,8 @@ export default function Dashboard() {
     description: "",
   });
   const { toast } = useToast();
-  const userId = "user-1"; // Mock user ID
+  const { user } = useAuth();
+  const userId = user?.id || "guest-user";
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
