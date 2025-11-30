@@ -35,7 +35,7 @@ export default function Dashboard() {
   });
   const { toast } = useToast();
   const { user } = useAuth();
-  const userId = user?.id || "guest-user";
+  const userId = user?.id;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -44,11 +44,15 @@ export default function Dashboard() {
       setSearchQuery(query);
     }
     
-    // Load user data
-    loadUserData();
-  }, [location]);
+    // Load user data only if authenticated
+    if (userId) {
+      loadUserData();
+    }
+  }, [location, userId]);
 
   const loadUserData = async () => {
+    if (!userId) return;
+    
     try {
       const creditsRes = await fetch(`/api/user-credits/${userId}`);
       if (creditsRes.ok) {
@@ -74,6 +78,11 @@ export default function Dashboard() {
 
   const handleAddProperty = async () => {
     try {
+      if (!userId) {
+        toast({ title: "Sign In Required", description: "Please sign in to add properties", variant: "destructive" });
+        return;
+      }
+      
       if (!formData.propertyName || !formData.address || !formData.city || !formData.state) {
         toast({ title: "Error", description: "Please fill all required fields" });
         return;

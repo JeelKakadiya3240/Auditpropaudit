@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, ShieldCheck, Search, Building2, Download } from "lucide-react";
+import { ArrowRight, ShieldCheck, Search, Building2, Download, Menu, X } from "lucide-react";
 import generatedImage from "@assets/generated_images/abstract_blue_data_map_background.png";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -10,6 +10,7 @@ export default function LandingPage() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [, navigate] = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleSampleReport = () => {
     toast({
@@ -58,44 +59,92 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Navigation */}
-      <header className="container mx-auto px-4 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
-            <ShieldCheck className="h-5 w-5 text-white" />
+      <header className="container mx-auto px-4 py-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
+              <ShieldCheck className="h-5 w-5 text-white" />
+            </div>
+            <span className="font-bold text-xl tracking-tight">AuditProp</span>
           </div>
-          <span className="font-bold text-xl tracking-tight">AuditProp</span>
-        </div>
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          <Link href="/solutions" className="hover:text-foreground transition-colors" data-testid="link-solutions">
-            Solutions
-          </Link>
-          <Link href="/nri-solutions" className="hover:text-foreground transition-colors" data-testid="link-nri-solutions">
-            NRI Solutions
-          </Link>
-          <Link href="/data-sources" className="hover:text-foreground transition-colors" data-testid="link-data-sources">
-            Data Sources
-          </Link>
-          <Link href="/pricing" className="hover:text-foreground transition-colors" data-testid="link-pricing">
-            Pricing
-          </Link>
-          <Link href="/api" className="hover:text-foreground transition-colors" data-testid="link-api">
-            API
-          </Link>
-          <Link href="/contact" className="hover:text-foreground transition-colors" data-testid="link-contact">
-            Contact
-          </Link>
-          <Link href="/news" className="hover:text-foreground transition-colors" data-testid="link-news">
-            News
-          </Link>
-        </nav>
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" asChild>
-            <Link href="/sign-in">Sign In</Link>
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+            <Link href="/solutions" className="hover:text-foreground transition-colors" data-testid="link-solutions">
+              Solutions
+            </Link>
+            <Link href="/nri-solutions" className="hover:text-foreground transition-colors" data-testid="link-nri-solutions">
+              NRI Solutions
+            </Link>
+            <Link href="/data-sources" className="hover:text-foreground transition-colors" data-testid="link-data-sources">
+              Data Sources
+            </Link>
+            <Link href="/pricing" className="hover:text-foreground transition-colors" data-testid="link-pricing">
+              Pricing
+            </Link>
+            <Link href="/api" className="hover:text-foreground transition-colors" data-testid="link-api">
+              API
+            </Link>
+            <Link href="/contact" className="hover:text-foreground transition-colors" data-testid="link-contact">
+              Contact
+            </Link>
+            <Link href="/news" className="hover:text-foreground transition-colors" data-testid="link-news">
+              News
+            </Link>
+          </nav>
+          <div className="hidden md:flex items-center gap-4">
+            <Button variant="ghost" asChild>
+              <Link href="/sign-in">Sign In</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/sign-in">Get Started</Link>
+            </Button>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            data-testid="button-mobile-menu"
+          >
+            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
-          <Button asChild>
-            <Link href="/sign-in">Get Started</Link>
-          </Button>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <nav className="md:hidden mt-4 pb-4 border-b border-border">
+            <div className="flex flex-col space-y-3 text-sm font-medium text-muted-foreground">
+              <Link href="/solutions" className="hover:text-foreground transition-colors py-2" data-testid="link-solutions-mobile" onClick={() => setIsMobileMenuOpen(false)}>
+                Solutions
+              </Link>
+              <Link href="/nri-solutions" className="hover:text-foreground transition-colors py-2" data-testid="link-nri-solutions-mobile" onClick={() => setIsMobileMenuOpen(false)}>
+                NRI Solutions
+              </Link>
+              <Link href="/data-sources" className="hover:text-foreground transition-colors py-2" data-testid="link-data-sources-mobile" onClick={() => setIsMobileMenuOpen(false)}>
+                Data Sources
+              </Link>
+              <Link href="/pricing" className="hover:text-foreground transition-colors py-2" data-testid="link-pricing-mobile" onClick={() => setIsMobileMenuOpen(false)}>
+                Pricing
+              </Link>
+              <Link href="/api" className="hover:text-foreground transition-colors py-2" data-testid="link-api-mobile" onClick={() => setIsMobileMenuOpen(false)}>
+                API
+              </Link>
+              <Link href="/contact" className="hover:text-foreground transition-colors py-2" data-testid="link-contact-mobile" onClick={() => setIsMobileMenuOpen(false)}>
+                Contact
+              </Link>
+              <Link href="/news" className="hover:text-foreground transition-colors py-2" data-testid="link-news-mobile" onClick={() => setIsMobileMenuOpen(false)}>
+                News
+              </Link>
+              <div className="flex flex-col gap-2 pt-3 border-t border-border">
+                <Button variant="ghost" asChild className="justify-start">
+                  <Link href="/sign-in" onClick={() => setIsMobileMenuOpen(false)}>Sign In</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/sign-in" onClick={() => setIsMobileMenuOpen(false)}>Get Started</Link>
+                </Button>
+              </div>
+            </div>
+          </nav>
+        )}
       </header>
 
       {/* Hero Section */}
