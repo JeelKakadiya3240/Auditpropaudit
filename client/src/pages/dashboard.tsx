@@ -4,21 +4,23 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Filter, Download, AlertTriangle, CheckCircle2, Clock, Plus, Archive, Home, DollarSign, MapPin, Trash2 } from "lucide-react";
+import { Search, Filter, Download, AlertTriangle, CheckCircle2, Clock, Plus, Archive, Home, DollarSign, MapPin, Trash2, Shield, FileText, Gavel, TrendingUp, Loader2, ChevronRight, Activity } from "lucide-react";
 import { PropertyCard } from "@/components/property-card";
 import { MOCK_PROPERTIES, stats, formatCurrency } from "@/lib/mockData";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 
 export default function Dashboard() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [userCredits, setUserCredits] = useState({ total: 100, used: 0 });
   const [userProperties, setUserProperties] = useState<any[]>([]);
   const [archivedProperties, setArchivedProperties] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("search");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [isAddingProperty, setIsAddingProperty] = useState(false);
+  const [lastAuditResult, setLastAuditResult] = useState<any>(null);
   const [formData, setFormData] = useState({
     propertyName: "",
     address: "",
@@ -75,6 +77,9 @@ export default function Dashboard() {
         return;
       }
 
+      setIsAddingProperty(true);
+      setLastAuditResult(null);
+
       const response = await fetch("/api/user-properties", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -86,7 +91,14 @@ export default function Dashboard() {
       });
 
       if (response.ok) {
-        toast({ title: "Success", description: "Property added successfully!" });
+        const result = await response.json();
+        setLastAuditResult(result.auditResults);
+        
+        toast({ 
+          title: "Property Added & Audited", 
+          description: `Comprehensive audit completed. Risk Level: ${result.auditResults?.riskLevel?.toUpperCase() || 'N/A'}` 
+        });
+        
         setFormData({
           propertyName: "",
           address: "",
@@ -106,6 +118,25 @@ export default function Dashboard() {
       }
     } catch (error) {
       toast({ title: "Error", description: "Failed to add property" });
+    } finally {
+      setIsAddingProperty(false);
+    }
+  };
+
+  const getRiskBadgeVariant = (riskLevel: string) => {
+    switch (riskLevel?.toLowerCase()) {
+      case 'high': return 'destructive';
+      case 'medium': return 'secondary';
+      case 'low': return 'default';
+      default: return 'outline';
+    }
+  };
+
+  const getECStatusLabel = (status: string) => {
+    switch (status) {
+      case 'form_16': return 'Clear (Form 16)';
+      case 'form_15': return 'Encumbrances Found (Form 15)';
+      default: return status;
     }
   };
 
@@ -312,47 +343,234 @@ export default function Dashboard() {
                   />
 
                   <div className="flex gap-2 pt-4">
-                    <Button onClick={handleAddProperty} data-testid="button-submit-property">Submit Property</Button>
-                    <Button variant="outline" onClick={() => setShowAddForm(false)} data-testid="button-cancel">Cancel</Button>
+                    <Button 
+                      onClick={handleAddProperty} 
+                      disabled={isAddingProperty}
+                      data-testid="button-submit-property"
+                    >
+                      {isAddingProperty ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Running Comprehensive Audit...
+                        </>
+                      ) : (
+                        'Submit & Run Audit'
+                      )}
+                    </Button>
+                    <Button variant="outline" onClick={() => setShowAddForm(false)} disabled={isAddingProperty} data-testid="button-cancel">Cancel</Button>
                   </div>
+                  
+                  {isAddingProperty && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                      <div className="flex items-center gap-2 text-blue-700">
+                        <Activity className="h-5 w-5 animate-pulse" />
+                        <p className="font-medium">Running comprehensive property audit...</p>
+                      </div>
+                      <ul className="text-sm text-blue-600 mt-2 space-y-1">
+                        <li>• Verifying Encumbrance Certificate (EC)</li>
+                        <li>• Checking RERA registration</li>
+                        <li>• Searching court records for litigation</li>
+                        <li>• Analyzing fraud risk indicators</li>
+                        <li>• Verifying title chain</li>
+                        <li>• Fetching land records</li>
+                        <li>• Gathering market intelligence</li>
+                      </ul>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+            
+            {lastAuditResult && (
+              <Card className="border-2 border-green-200 bg-green-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-green-700">
+                    <CheckCircle2 className="h-5 w-5" />
+                    Audit Complete
+                  </CardTitle>
+                  <CardDescription>Your property has been added and all verification checks are complete</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div className="bg-white p-3 rounded-lg border">
+                      <p className="text-xs text-muted-foreground">Risk Score</p>
+                      <p className="text-2xl font-bold">{lastAuditResult.overallRiskScore}</p>
+                      <Badge variant={getRiskBadgeVariant(lastAuditResult.riskLevel) as any} className="mt-1">
+                        {lastAuditResult.riskLevel?.toUpperCase()}
+                      </Badge>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg border">
+                      <p className="text-xs text-muted-foreground">EC Status</p>
+                      <p className="text-sm font-medium">{getECStatusLabel(lastAuditResult.ecStatus)}</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg border">
+                      <p className="text-xs text-muted-foreground">Fraud Score</p>
+                      <p className="text-2xl font-bold">{lastAuditResult.fraudScore}</p>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg border">
+                      <p className="text-xs text-muted-foreground">Litigation Cases</p>
+                      <p className="text-2xl font-bold">{lastAuditResult.litigationCount}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    <Link href="/ec-verification">
+                      <Button variant="outline" size="sm" className="gap-1">
+                        <FileText className="h-4 w-4" /> EC Details
+                      </Button>
+                    </Link>
+                    <Link href="/title-verification">
+                      <Button variant="outline" size="sm" className="gap-1">
+                        <Shield className="h-4 w-4" /> Title Verification
+                      </Button>
+                    </Link>
+                    <Link href="/litigation">
+                      <Button variant="outline" size="sm" className="gap-1">
+                        <Gavel className="h-4 w-4" /> Litigation
+                      </Button>
+                    </Link>
+                    <Link href="/fraud-detection">
+                      <Button variant="outline" size="sm" className="gap-1">
+                        <AlertTriangle className="h-4 w-4" /> Fraud Analysis
+                      </Button>
+                    </Link>
+                    <Link href="/market-intelligence">
+                      <Button variant="outline" size="sm" className="gap-1">
+                        <TrendingUp className="h-4 w-4" /> Market Intelligence
+                      </Button>
+                    </Link>
+                  </div>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="mt-4 text-muted-foreground"
+                    onClick={() => setLastAuditResult(null)}
+                  >
+                    Dismiss
+                  </Button>
                 </CardContent>
               </Card>
             )}
 
             <div className="grid gap-4">
               {userProperties.length > 0 ? (
-                userProperties.map((prop) => (
-                  <Card key={prop.id} className="border-muted" data-testid={`card-property-${prop.id}`}>
-                    <CardHeader className="pb-3">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="text-lg">{prop.propertyName}</CardTitle>
-                          <p className="text-sm text-muted-foreground">{prop.address}, {prop.city}</p>
+                userProperties.map((prop) => {
+                  const auditDetails = prop.auditDetails as any;
+                  return (
+                    <Card key={prop.id} className="border-muted" data-testid={`card-property-${prop.id}`}>
+                      <CardHeader className="pb-3">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <CardTitle className="text-lg">{prop.propertyName}</CardTitle>
+                            <p className="text-sm text-muted-foreground">{prop.address}, {prop.city}, {prop.state}</p>
+                          </div>
+                          <div className="flex gap-2 items-center">
+                            {auditDetails?.riskLevel && (
+                              <Badge 
+                                variant={getRiskBadgeVariant(auditDetails.riskLevel) as any}
+                                className="capitalize"
+                                data-testid={`badge-risk-${prop.id}`}
+                              >
+                                {auditDetails.riskLevel} Risk
+                              </Badge>
+                            )}
+                            <Badge variant={prop.transactionType === 'BUY' ? 'default' : 'secondary'} data-testid={`badge-type-${prop.id}`}>
+                              {prop.transactionType}
+                            </Badge>
+                          </div>
                         </div>
-                        <Badge variant={prop.transactionType === 'BUY' ? 'default' : 'secondary'} data-testid={`badge-type-${prop.id}`}>
-                          {prop.transactionType}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <p className="text-muted-foreground">Type</p>
-                          <p className="font-medium">{prop.propertyType}</p>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <p className="text-muted-foreground">Type</p>
+                            <p className="font-medium">{prop.propertyType}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Value</p>
+                            <p className="font-medium">{prop.estimatedValue ? formatCurrency(Number(prop.estimatedValue)) : 'N/A'}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Area</p>
+                            <p className="font-medium">{prop.area ? `${prop.area} sq ft` : 'N/A'}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-muted-foreground">Value</p>
-                          <p className="font-medium">{prop.estimatedValue ? formatCurrency(Number(prop.estimatedValue)) : 'N/A'}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground">Area</p>
-                          <p className="font-medium">{prop.area} sq ft</p>
-                        </div>
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-3">{prop.description}</p>
-                    </CardContent>
-                  </Card>
-                ))
+                        
+                        {auditDetails && (
+                          <>
+                            <div className="border-t pt-4">
+                              <p className="text-sm font-medium mb-3 flex items-center gap-2">
+                                <Shield className="h-4 w-4" /> Audit Summary
+                              </p>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div className="bg-muted/50 p-2 rounded text-center">
+                                  <p className="text-xs text-muted-foreground">Risk Score</p>
+                                  <p className="text-lg font-bold">{auditDetails.riskScore || 0}</p>
+                                </div>
+                                <div className="bg-muted/50 p-2 rounded text-center">
+                                  <p className="text-xs text-muted-foreground">EC Status</p>
+                                  <p className="text-xs font-medium">{auditDetails.ecStatus === 'form_16' ? 'Clear' : 'Has Encumbrances'}</p>
+                                </div>
+                                <div className="bg-muted/50 p-2 rounded text-center">
+                                  <p className="text-xs text-muted-foreground">Title</p>
+                                  <p className="text-xs font-medium capitalize">{auditDetails.titleStatus || 'Pending'}</p>
+                                </div>
+                                <div className="bg-muted/50 p-2 rounded text-center">
+                                  <p className="text-xs text-muted-foreground">Litigation</p>
+                                  <p className="text-lg font-bold">{auditDetails.litigationCount || 0}</p>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="flex flex-wrap gap-2 pt-2">
+                              <Link href={`/ec-verification?propertyId=${prop.id}`}>
+                                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1">
+                                  <FileText className="h-3 w-3" /> EC
+                                  <ChevronRight className="h-3 w-3" />
+                                </Button>
+                              </Link>
+                              <Link href={`/title-verification?propertyId=${prop.id}`}>
+                                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1">
+                                  <Shield className="h-3 w-3" /> Title
+                                  <ChevronRight className="h-3 w-3" />
+                                </Button>
+                              </Link>
+                              <Link href={`/litigation?propertyId=${prop.id}`}>
+                                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1">
+                                  <Gavel className="h-3 w-3" /> Litigation
+                                  <ChevronRight className="h-3 w-3" />
+                                </Button>
+                              </Link>
+                              <Link href={`/fraud-detection?propertyId=${prop.id}`}>
+                                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1">
+                                  <AlertTriangle className="h-3 w-3" /> Fraud
+                                  <ChevronRight className="h-3 w-3" />
+                                </Button>
+                              </Link>
+                              <Link href={`/land-records?propertyId=${prop.id}`}>
+                                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1">
+                                  <MapPin className="h-3 w-3" /> Land Records
+                                  <ChevronRight className="h-3 w-3" />
+                                </Button>
+                              </Link>
+                              <Link href={`/market-intelligence?city=${prop.city}`}>
+                                <Button variant="ghost" size="sm" className="h-8 text-xs gap-1">
+                                  <TrendingUp className="h-3 w-3" /> Market Intel
+                                  <ChevronRight className="h-3 w-3" />
+                                </Button>
+                              </Link>
+                            </div>
+                          </>
+                        )}
+                        
+                        {prop.description && (
+                          <p className="text-sm text-muted-foreground border-t pt-3">{prop.description}</p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })
               ) : (
                 <div className="text-center py-12">
                   <Home className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />

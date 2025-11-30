@@ -56,9 +56,30 @@ export interface IStorage {
   addUserProperty(property: InsertUserProperty): Promise<UserProperty>;
   getUserProperties(userId: string, status?: string): Promise<UserProperty[]>;
   updateUserPropertyStatus(propertyId: string, status: string): Promise<UserProperty | undefined>;
+  updateUserPropertyAuditDetails(propertyId: string, auditDetails: unknown): Promise<UserProperty | undefined>;
   archiveSearchedProperty(userId: string, propertyId: string, propertyDetails: PropertyDetails | unknown, notes?: string): Promise<PropertyArchiveEntry>;
   getPropertyArchive(userId: string): Promise<PropertyArchiveEntry[]>;
   deductCredits(userId: string, amount: number): Promise<UserCredit | undefined>;
+  
+  // Comprehensive Property Audit methods
+  runComprehensiveAudit(propertyId: string, propertyDetails: {
+    propertyName: string;
+    address: string;
+    city: string;
+    state: string;
+    pincode?: string;
+    propertyType: string;
+    estimatedValue?: string;
+    area?: string;
+    ownerName?: string;
+  }): Promise<{
+    encumbranceCertificate: EncumbranceCertificate;
+    titleVerification: TitleVerification;
+    fraudScore: FraudDetectionScore;
+    litigationCases: LitigationCase[];
+    landRecord: LandRecord;
+    marketIntelligence: MarketIntelligence | undefined;
+  }>;
 }
 
 export class MemStorage implements IStorage {
@@ -148,6 +169,7 @@ export class MemStorage implements IStorage {
       state: "Karnataka",
       propertyAddress: "123 Main Street, Bangalore",
       propertyId: "prop-002",
+      ownerName: "Jane Smith",
       plaintiff: "Jane Smith",
       defendant: "ABC Builders",
       caseType: "title_dispute",
@@ -156,8 +178,12 @@ export class MemStorage implements IStorage {
       judgment: null,
       judgmentDate: null,
       description: "Property title dispute regarding boundary demarcation",
+      caseAmount: null,
+      litigationOutcome: "pending",
       riskLevel: "high",
+      relatedCases: null,
       createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     // Mock Market Intelligence
@@ -360,21 +386,57 @@ export class MemStorage implements IStorage {
   }
 
   async analyzeFraudRisks(propertyId: string, ownerName: string, address: string, state: string): Promise<FraudDetectionScore> {
+    const priceAnomalyScore = Math.floor(Math.random() * 100);
+    const documentForgerScore = Math.floor(Math.random() * 50);
+    const sellerBehaviorScore = Math.floor(Math.random() * 40);
+    const titleFraudScore = Math.floor(Math.random() * 30);
+    const doubleSaleRiskScore = Math.floor(Math.random() * 25);
+    const benamiTransactionScore = Math.floor(Math.random() * 20);
+    const duplicateSaleInstances = Math.random() > 0.8 ? 1 : 0;
+    const forgedDocumentCount = Math.random() > 0.85 ? 1 : 0;
+    const identityTheftAlerts = Math.random() > 0.9 ? 1 : 0;
+    const multipleClaimDisputes = Math.random() > 0.85 ? 1 : 0;
+    const gpaHolderConcerns = Math.random() > 0.8;
+
+    const fraudFlags: string[] = [];
+    if (duplicateSaleInstances > 0) fraudFlags.push("duplicate_sale");
+    if (forgedDocumentCount > 0) fraudFlags.push("forged_document");
+    if (identityTheftAlerts > 0) fraudFlags.push("identity_theft");
+    if (multipleClaimDisputes > 0) fraudFlags.push("multiple_claims");
+    if (gpaHolderConcerns) fraudFlags.push("gpa_holder_concern");
+
+    const overallFraudScore = Math.min(
+      100,
+      Math.floor(
+        priceAnomalyScore * 0.2 +
+        documentForgerScore * 0.3 +
+        (duplicateSaleInstances * 15) +
+        (forgedDocumentCount * 20) +
+        (identityTheftAlerts * 25) +
+        (multipleClaimDisputes * 20) +
+        (gpaHolderConcerns ? 15 : 0)
+      )
+    );
+
     const fraudScore: FraudDetectionScore = {
       id: randomUUID(),
       propertyId,
       ownerName,
-      overallFraudScore: 0,
-      priceAnomalyScore: Math.random() * 100,
-      documentForgerScore: Math.random() * 50,
-      duplicateSaleInstances: Math.random() > 0.8 ? 1 : 0,
-      forgedDocumentCount: Math.random() > 0.85 ? 1 : 0,
-      identityTheftAlerts: Math.random() > 0.9 ? 1 : 0,
-      multipleClaimDisputes: Math.random() > 0.85 ? 1 : 0,
-      gpaHolderConcerns: Math.random() > 0.8,
+      overallFraudScore,
+      priceAnomalyScore,
+      documentForgerScore,
+      sellerBehaviorScore,
+      titleFraudScore,
+      doubleSaleRiskScore,
+      benamiTransactionScore,
+      duplicateSaleInstances,
+      forgedDocumentCount,
+      identityTheftAlerts,
+      multipleClaimDisputes,
+      gpaHolderConcerns,
       salesAgreementFlags: [],
       mortgageCheckStatus: "clear",
-      fraudFlags: [],
+      fraudFlags,
       fraudAlerts: [],
       detailedFindings: {
         duplicateSales: this.checkDuplicateSales(propertyId),
@@ -384,29 +446,10 @@ export class MemStorage implements IStorage {
         gpaHolders: this.checkGPAHolders(propertyId),
         mortgageStatus: this.checkMortgageStatus(propertyId),
       },
-      recommendation: "Manual review recommended",
+      recommendation: overallFraudScore > 50 ? "High risk - Manual review required" : "Low risk - Proceed with caution",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-
-    const fraudFlags = [];
-    if (fraudScore.duplicateSaleInstances > 0) fraudFlags.push("duplicate_sale");
-    if (fraudScore.forgedDocumentCount > 0) fraudFlags.push("forged_document");
-    if (fraudScore.identityTheftAlerts > 0) fraudFlags.push("identity_theft");
-    if (fraudScore.multipleClaimDisputes > 0) fraudFlags.push("multiple_claims");
-    if (fraudScore.gpaHolderConcerns) fraudFlags.push("gpa_holder_concern");
-
-    fraudScore.fraudFlags = fraudFlags;
-    fraudScore.overallFraudScore = Math.min(
-      100,
-      fraudScore.priceAnomalyScore * 0.2 +
-      fraudScore.documentForgerScore * 0.3 +
-      (fraudScore.duplicateSaleInstances * 15) +
-      (fraudScore.forgedDocumentCount * 20) +
-      (fraudScore.identityTheftAlerts * 25) +
-      (fraudScore.multipleClaimDisputes * 20) +
-      (fraudScore.gpaHolderConcerns ? 15 : 0)
-    );
 
     this.fraudScores.set(fraudScore.id, fraudScore);
     return fraudScore;
@@ -519,7 +562,19 @@ export class MemStorage implements IStorage {
   async addUserProperty(property: InsertUserProperty): Promise<UserProperty> {
     const userProp: UserProperty = {
       id: randomUUID(),
-      ...property,
+      userId: property.userId,
+      propertyName: property.propertyName,
+      address: property.address,
+      city: property.city,
+      state: property.state,
+      pincode: property.pincode ?? null,
+      propertyType: property.propertyType,
+      transactionType: property.transactionType,
+      estimatedValue: property.estimatedValue ?? null,
+      area: property.area ?? null,
+      description: property.description ?? null,
+      status: property.status ?? "active",
+      auditDetails: property.auditDetails ?? null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -543,6 +598,15 @@ export class MemStorage implements IStorage {
     return prop;
   }
 
+  async updateUserPropertyAuditDetails(propertyId: string, auditDetails: unknown): Promise<UserProperty | undefined> {
+    const prop = Array.from(this.userPropertiesMap.values()).find(p => p.id === propertyId);
+    if (prop) {
+      prop.auditDetails = auditDetails;
+      prop.updatedAt = new Date();
+    }
+    return prop;
+  }
+
   async archiveSearchedProperty(userId: string, propertyId: string, propertyDetails: PropertyDetails | unknown, notes?: string): Promise<PropertyArchiveEntry> {
     const archive: PropertyArchiveEntry = {
       id: randomUUID(),
@@ -550,8 +614,8 @@ export class MemStorage implements IStorage {
       propertyId,
       propertyDetails,
       searchedAt: new Date(),
-      notes: notes || "",
-      rating: undefined,
+      notes: notes || null,
+      rating: null,
     };
     this.propertyArchiveMap.set(archive.id, archive);
     return archive;
@@ -573,6 +637,178 @@ export class MemStorage implements IStorage {
       }
     }
     return credit;
+  }
+
+  async runComprehensiveAudit(propertyId: string, propertyDetails: {
+    propertyName: string;
+    address: string;
+    city: string;
+    state: string;
+    pincode?: string;
+    propertyType: string;
+    estimatedValue?: string;
+    area?: string;
+    ownerName?: string;
+  }): Promise<{
+    encumbranceCertificate: EncumbranceCertificate;
+    titleVerification: TitleVerification;
+    fraudScore: FraudDetectionScore;
+    litigationCases: LitigationCase[];
+    landRecord: LandRecord;
+    marketIntelligence: MarketIntelligence | undefined;
+  }> {
+    const ownerName = propertyDetails.ownerName || "Property Owner";
+    const surveyNumber = `SN-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    const district = propertyDetails.city;
+    
+    // 1. Create Encumbrance Certificate
+    const ecId = randomUUID();
+    const hasEncumbrances = Math.random() > 0.7;
+    const ec: EncumbranceCertificate = {
+      id: ecId,
+      propertyId,
+      state: propertyDetails.state,
+      district,
+      subRegistrar: `${propertyDetails.city} Sub-Registrar`,
+      surveyNumber,
+      ownerName,
+      ecStatus: hasEncumbrances ? "form_15" : "form_16",
+      encumbrances: hasEncumbrances ? [{
+        type: "mortgage",
+        amount: "50L",
+        bank: "HDFC Bank",
+        date: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
+      }] : [],
+      verifiedDate: new Date(),
+      expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      documentUrl: `/documents/ec-${propertyId}.pdf`,
+      fraudRiskScore: Math.floor(Math.random() * 30),
+    };
+    this.encumbranceCertificates.set(propertyId, ec);
+
+    // 2. Create Title Verification
+    const titleId = randomUUID();
+    const titleClear = Math.random() > 0.2;
+    const yearsVerified = Math.floor(Math.random() * 20) + 10;
+    const titleVerification: TitleVerification = {
+      id: titleId,
+      propertyId,
+      ownerName,
+      currentSalePrice: propertyDetails.estimatedValue || null,
+      verificationStatus: titleClear ? "clean" : (Math.random() > 0.5 ? "flagged" : "unclear"),
+      titleChainComplete: titleClear,
+      yearsVerified,
+      mortgageStatus: hasEncumbrances ? "mortgaged" : "clear",
+      taxClearance: Math.random() > 0.3,
+      litigationFound: Math.random() > 0.8,
+      ownershipChain: [
+        { owner: ownerName, period: `${new Date().getFullYear() - 5}-Present`, document: "Sale Deed" },
+        { owner: "Previous Owner", period: `${new Date().getFullYear() - 15}-${new Date().getFullYear() - 5}`, document: "Sale Deed" },
+        { owner: "Original Owner", period: `${new Date().getFullYear() - yearsVerified}-${new Date().getFullYear() - 15}`, document: "Original Title" },
+      ],
+      riskScore: Math.floor(Math.random() * 40),
+      redFlags: titleClear ? [] : ["Incomplete documentation", "Pending mutation"],
+      verificationDate: new Date(),
+      createdAt: new Date(),
+    };
+    this.titleVerifications.set(propertyId, titleVerification);
+
+    // 3. Run Fraud Detection Analysis
+    const fraudScore = await this.analyzeFraudRisks(propertyId, ownerName, propertyDetails.address, propertyDetails.state);
+
+    // 4. Check/Create Litigation Cases (simulated search)
+    const litigationCases: LitigationCase[] = [];
+    const hasLitigation = Math.random() > 0.75;
+    if (hasLitigation) {
+      const caseNumber = `CS-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000)}`;
+      const litigationCase: LitigationCase = {
+        id: randomUUID(),
+        caseNumber,
+        court: Math.random() > 0.5 ? "district_court" : "high_court",
+        state: propertyDetails.state,
+        propertyAddress: propertyDetails.address,
+        propertyId,
+        ownerName,
+        plaintiff: Math.random() > 0.5 ? ownerName : "Third Party Claimant",
+        defendant: Math.random() > 0.5 ? "Previous Owner" : ownerName,
+        caseType: ["title_dispute", "boundary_dispute", "encroachment", "inheritance"][Math.floor(Math.random() * 4)],
+        filingDate: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000),
+        status: ["pending", "disposed", "appealed"][Math.floor(Math.random() * 3)],
+        judgment: null,
+        judgmentDate: null,
+        description: "Property-related dispute under investigation",
+        caseAmount: null,
+        litigationOutcome: "pending",
+        riskLevel: ["low", "medium", "high"][Math.floor(Math.random() * 3)],
+        relatedCases: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      this.litigationCases.set(caseNumber, litigationCase);
+      litigationCases.push(litigationCase);
+    }
+
+    // 5. Create Land Record
+    const landRecordId = randomUUID();
+    const landRecord: LandRecord = {
+      id: landRecordId,
+      propertyId,
+      state: propertyDetails.state,
+      district,
+      village: propertyDetails.city,
+      surveyNumber,
+      plotNumber: `PLT-${Math.floor(Math.random() * 1000)}`,
+      pattaNumber: `PAT-${Math.floor(Math.random() * 10000)}`,
+      areaInSqft: propertyDetails.area || "1000",
+      areaInAcres: propertyDetails.area ? (parseFloat(propertyDetails.area) / 43560).toFixed(2) : "0.02",
+      landType: propertyDetails.propertyType === "LAND" ? "agricultural" : (propertyDetails.propertyType === "COMMERCIAL" ? "commercial" : "residential"),
+      recordStatus: "verified",
+      ownerName,
+      mutationStatus: Math.random() > 0.2 ? "completed" : "pending",
+      conversionCertificateRequired: propertyDetails.propertyType === "LAND",
+      conversionCertificateNumber: propertyDetails.propertyType === "LAND" ? `CC-${Math.floor(Math.random() * 10000)}` : null,
+      nrlUpToDate: Math.random() > 0.3,
+      lastMutationDate: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000),
+      sourcePortal: ["tnreginet", "kaveri", "doris", "pearl"][Math.floor(Math.random() * 4)],
+      createdAt: new Date(),
+    };
+    this.landRecords.set(propertyId, landRecord);
+
+    // 6. Get or Create Market Intelligence for the city
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    let marketIntel = await this.getMarketIntelligence(propertyDetails.city, currentMonth);
+    if (!marketIntel) {
+      const basePrice = propertyDetails.estimatedValue ? parseFloat(propertyDetails.estimatedValue) : 5000000;
+      marketIntel = {
+        id: randomUUID(),
+        city: propertyDetails.city,
+        state: propertyDetails.state,
+        locality: propertyDetails.city,
+        monthYear: currentMonth,
+        avgPropertyPrice: String(basePrice),
+        pricePerSqft: String(Math.floor(basePrice / 1000)),
+        transactionVolume: Math.floor(Math.random() * 500) + 100,
+        fraudRatePercentage: (Math.random() * 5).toFixed(2),
+        developerDefaultRate: (Math.random() * 3).toFixed(2),
+        projectStallRate: (Math.random() * 2).toFixed(2),
+        avgProjectDelayMonths: Math.floor(Math.random() * 12),
+        demandSupplyRatio: (0.8 + Math.random() * 0.6).toFixed(2),
+        rentYield: (2 + Math.random() * 3).toFixed(2),
+        investmentScore: Math.floor(60 + Math.random() * 30),
+        regulatoryChanges: ["Recent RERA updates", "New property tax guidelines"],
+        createdAt: new Date(),
+      };
+      this.marketIntelligence.set(`${propertyDetails.city}-${currentMonth}`, marketIntel);
+    }
+
+    return {
+      encumbranceCertificate: ec,
+      titleVerification,
+      fraudScore,
+      litigationCases,
+      landRecord,
+      marketIntelligence: marketIntel,
+    };
   }
 }
 

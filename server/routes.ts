@@ -392,13 +392,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Insufficient credits" });
       }
       
+      // Add the property first
       const property = await storage.addUserProperty(validated);
+      
+      // Run comprehensive audit to populate all verification dashboards
+      const auditResults = await storage.runComprehensiveAudit(property.id, {
+        propertyName: validated.propertyName,
+        address: validated.address,
+        city: validated.city,
+        state: validated.state,
+        pincode: validated.pincode ?? undefined,
+        propertyType: validated.propertyType,
+        estimatedValue: validated.estimatedValue ?? undefined,
+        area: validated.area ?? undefined,
+      });
+      
+      // Calculate overall risk score from audit results
+      const overallRiskScore = Math.floor(
+        (auditResults.fraudScore.overallFraudScore * 0.4) +
+        (auditResults.titleVerification.riskScore * 0.3) +
+        ((auditResults.encumbranceCertificate.fraudRiskScore || 0) * 0.2) +
+        (auditResults.litigationCases.length > 0 ? 20 : 0) * 0.1
+      );
+      
+      const riskLevel = overallRiskScore > 60 ? "high" : overallRiskScore > 30 ? "medium" : "low";
+      
+      // Update property with audit details
+      const updatedProperty = await storage.updateUserPropertyAuditDetails(property.id, {
+        riskScore: overallRiskScore,
+        riskLevel,
+        ecStatus: auditResults.encumbranceCertificate.ecStatus,
+        titleStatus: auditResults.titleVerification.verificationStatus,
+        fraudScore: auditResults.fraudScore.overallFraudScore,
+        litigationCount: auditResults.litigationCases.length,
+        auditDate: new Date().toISOString(),
+      });
+      
+      // Deduct credits after successful audit
       await storage.deductCredits(validated.userId, credits.creditsPerProperty);
-      res.json(property);
+      
+      res.json({
+        property: updatedProperty || property,
+        auditResults: {
+          overallRiskScore,
+          riskLevel,
+          ecStatus: auditResults.encumbranceCertificate.ecStatus,
+          titleStatus: auditResults.titleVerification.verificationStatus,
+          fraudScore: auditResults.fraudScore.overallFraudScore,
+          litigationCount: auditResults.litigationCases.length,
+          marketInvestmentScore: auditResults.marketIntelligence?.investmentScore,
+        },
+      });
     } catch (error) {
       if (error instanceof ZodError) {
         res.status(400).json({ error: "Invalid property data", details: error.errors });
       } else {
+        console.error("Error adding property:", error);
         res.status(500).json({ error: "Failed to add property" });
       }
     }
@@ -411,6 +460,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(properties);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch properties" });
+    }
+  });
+
+  // Get all audit data for a specific property
+  app.get("/api/property-audit/:propertyId", async (req, res) => {
+    try {
+      const propertyId = req.params.propertyId;
+      
+      const [ec, title, fraud, landRecord, litigationCases] = await Promise.all([
+        storage.getEncumbranceCertificate(propertyId),
+        storage.getTitleVerification(propertyId),
+        storage.getFraudScore(propertyId),
+        storage.getLandRecord(propertyId),
+        storage.searchLitigationByPropertyId(propertyId),
+      ]);
+      
+      res.json({
+        propertyId,
+        encumbranceCertificate: ec,
+        titleVerification: title,
+        fraudScore: fraud,
+        landRecord,
+        litigationCases,
+      });
+    } catch (error) {
+      console.error("Error fetching property audit data:", error);
+      res.status(500).json({ error: "Failed to fetch property audit data" });
     }
   });
 
