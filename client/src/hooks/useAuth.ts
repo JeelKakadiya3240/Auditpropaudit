@@ -27,6 +27,7 @@ interface ApiError {
 }
 
 async function authRequest<T>(url: string, data?: unknown): Promise<T> {
+  
   const response = await fetch(url, {
     method: "POST",
     headers: data ? { "Content-Type": "application/json" } : {},
@@ -72,7 +73,7 @@ export function useAuth() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginData) => {
-      return authRequest<{ success: boolean; user: AuthUser }>("/api/auth/login", data);
+      return authRequest<{ success: boolean; user: AuthUser }>(`${import.meta.env.VITE_API_URL}/auth/login`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
@@ -81,7 +82,7 @@ export function useAuth() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegisterData) => {
-      return authRequest<{ success: boolean; message: string; userId: string }>("/api/auth/register", data);
+      return authRequest<{ success: boolean; message: string; userId: string }>(`${import.meta.env.VITE_API_URL}/auth/register`, data);
     },
   });
 

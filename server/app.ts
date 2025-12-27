@@ -3,7 +3,14 @@ import express, { type Express, type Request, Response, NextFunction } from "exp
 import apiRoutes from "./routes/index.js";
 import { logConfigurationSummary, checkDatabaseHealth } from "./supabase-config";
 import { pool } from "./db";
+import cors from "cors";
 
+export function corsMiddleware(app: Express) {
+  app.use(cors({
+  origin: "http://localhost:5001", // or "*" ONLY for dev
+  credentials: true
+}));
+}
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -21,6 +28,7 @@ const server = createServer(app);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+corsMiddleware(app);
 // Mount API routes
 app.use('/api', apiRoutes);
 

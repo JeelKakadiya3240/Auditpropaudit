@@ -78,9 +78,9 @@ router.post('/login', asyncHandler(async (req: Request, res: Response) => {
 
   await auth.updateLastLogin(user.id);
 
-  req.session.userId = user.id;
-  req.session.email = user.email!;
-  req.session.role = user.role;
+  // req.session.userId = user.id;
+  // req.session.email = user.email!;
+  // req.session.role = user.role;
 
   res.json({
     success: true,
