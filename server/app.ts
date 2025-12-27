@@ -1,7 +1,9 @@
-import { type Server } from "node:http";
-
+import { createServer, Server } from "node:http";
 import express, { type Express, type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
+import apiRoutes from "./routes/index.js";
+import { logConfigurationSummary, checkDatabaseHealth } from "./supabase-config";
+import { pool } from "./db";
+
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -10,23 +12,24 @@ export function log(message: string, source = "express") {
     second: "2-digit",
     hour12: true,
   });
-
+  
   console.log(`${formattedTime} [${source}] ${message}`);
 }
 
 export const app = express();
+const server = createServer(app);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+// Mount API routes
+app.use('/api', apiRoutes);
 
 declare module 'http' {
   interface IncomingMessage {
     rawBody: unknown
   }
 }
-app.use(express.json({
-  verify: (req, _res, buf) => {
-    req.rawBody = buf;
-  }
-}));
-app.use(express.urlencoded({ extended: false }));
+
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -61,7 +64,24 @@ app.use((req, res, next) => {
 export default async function runApp(
   setup: (app: Express, server: Server) => Promise<void>,
 ) {
-  const server = await registerRoutes(app);
+  // Initialize and validate Supabase connection
+  try {
+    logConfigurationSummary();
+    
+    const isHealthy = await checkDatabaseHealth(pool);
+    if (isHealthy) {
+      log("Supabase database connection established", "supabase");
+    } else {
+      log("WARNING: Database health check failed", "supabase");
+    }
+  } catch (error) {
+    log(`Error initializing Supabase: ${error instanceof Error ? error.message : String(error)}`, "supabase");
+  }
+
+  // const server = app.listen(0); // Create server but don't start listening yet
+
+  // Mount API routes
+  app.use('/api', apiRoutes);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -80,11 +100,9 @@ export default async function runApp(
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
+   // const server = app.listen(0); <-- COMMENT OR REMOVE THIS
+  // ... later ...
+  server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
   });
 }
